@@ -1,0 +1,51 @@
+sortby = date AND all times
+
+SELECT app.date_time, per.name, per.relation, app.place, 
+                        app.addr_street, app.addr_street2, 
+                        app.addr_city, app.addr_zipcode, app.addr_province 
+                        FROM persons per, person_appts pa, appointments app 
+                        WHERE per.name = pa.name AND per.login_email = pa.login_email 
+                        AND pa.app_id = app.id AND per.login_email='jdoe@gmail.com'
+                        ORDER BY app.date_time;
+                        
+sortby = date AND future
+
+SELECT app.date_time, per.name, per.relation, app.place, 
+                        app.addr_street, app.addr_street2, 
+                        app.addr_city, app.addr_zipcode, app.addr_province 
+                        FROM persons per, person_appts pa, appointments app 
+                        WHERE per.name = pa.name AND per.login_email = pa.login_email 
+                        AND pa.app_id = app.id AND app.date_time > now() 
+                        ORDER BY app.date_time;
+                        
+final code:
+
+    $mysqli = mysqli_connect("localhost", "cs213user", "letmein", "scheduler");
+    $sql = "SELECT app.date_time, per.name, per.relation, app.place, "
+                . "app.addr_street, app.addr_street2, "
+                . "app.addr_city, app.addr_zipcode, app.addr_province "
+                . "FROM persons per, person_appts pa, appointments app "
+                . "WHERE per.name = pa.name AND per.login_email = pa.login_email "
+                . "AND pa.app_id = app.id AND per.login_email = '" .$_SESSION['email']. "'";
+
+    
+    if (!$past) {
+        $sql .= " AND app.date_time > now()";
+    }
+    
+    switch ($sortby) {
+        case "date":
+            $sql .= " ORDER BY app.date_time";
+            break;
+        case "person";
+            $sql .= " ORDER BY per.name";
+            break;
+        default:
+            //invalid input
+            header("Location: home.php");
+            exit;
+    }
+    //$sql = "SELECT email FROM logins WHERE email = '".$targetemail."'";
+    //$result = mysqli_query($mysqli, $sql) or die(mysqli_error($mysqli));
+    
+    
